@@ -85,7 +85,6 @@ button { font-family: inherit; cursor: pointer; }
   color: var(--brand-700);
 }
 .brand-mark { color: var(--brand-700); flex-shrink: 0; }
-.logo-accent { fill: var(--teal-500); }
 .brand-text {
   font-weight: 800;
   letter-spacing: 0.04em;
