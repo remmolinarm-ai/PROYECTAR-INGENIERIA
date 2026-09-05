@@ -298,43 +298,6 @@ button { font-family: inherit; cursor: pointer; }
   background: var(--teal-400);
 }
 
-/* ---------- Proyectos / proceso ---------- */
-.process-list {
-  display: grid;
-  gap: 20px;
-  max-width: 780px;
-  margin: 0 auto;
-}
-.process-step {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-  background: #fff;
-  border: 1px solid rgba(10,18,32,0.06);
-  border-radius: var(--radius);
-  padding: 26px 28px;
-  box-shadow: var(--shadow-sm);
-}
-.process-index {
-  flex-shrink: 0;
-  width: 44px; height: 44px;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 10px;
-  background: var(--navy-950);
-  color: var(--teal-400);
-  font-weight: 800;
-  font-size: 0.95rem;
-}
-.process-step h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 6px; color: var(--brand-700); }
-.process-step p { color: var(--steel-500); font-size: 0.95rem; }
-.process-note {
-  text-align: center;
-  margin-top: 40px;
-  color: var(--steel-500);
-}
-.process-note a { color: var(--teal-600); font-weight: 600; }
-.process-note a:hover { text-decoration: underline; }
-
 /* ---------- Contacto ---------- */
 .contact-grid {
   display: grid;

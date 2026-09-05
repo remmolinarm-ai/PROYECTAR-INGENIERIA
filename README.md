@@ -7,7 +7,7 @@ dispositivos y utillajes de producción, y gestión de la calidad industrial.
 ## Estructura
 
 ```
-index.html      Página única con las secciones: Inicio, Nosotros, Servicios, Proyectos, Contacto
+index.html      Página única con las secciones: Inicio, Nosotros, Servicios, Contacto
 css/style.css   Estilos
 js/main.js      Menú móvil, scroll-spy, animaciones y envío del formulario
 assets/         Favicon e íconos
