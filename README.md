@@ -11,14 +11,7 @@ index.html      Página única con las secciones: Inicio, Nosotros, Servicios, C
 css/style.css   Estilos
 js/main.js      Menú móvil, scroll-spy, animaciones y envío del formulario
 assets/         Favicon e íconos
-presupuestador/ App de presupuestos para herrería (ver su propio README.md)
 ```
-
-## Presupuestador (app de presupuestos)
-
-`presupuestador/` es una app web instalable (PWA) para cargar precios de
-materiales y armar presupuestos con cálculo automático de mano de obra.
-Ver `presupuestador/README.md` para el detalle de uso y estructura.
 
 ## Configurar el formulario de contacto
 
