@@ -8,20 +8,27 @@
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo-mark" viewBox="0 0 64 72">
+      <rect x="6" y="6" width="16" height="60" rx="4" fill="currentColor"/>
+      <path d="M28 6 H50 L64 22 L50 38 H28 Z" fill="currentColor"/>
+      <path class="logo-accent" d="M40 44 L56 56 L40 68 Z"/>
+    </symbol>
+  </defs>
+</svg>
 
 <a class="skip-link" href="#main">Saltar al contenido</a>
 
 <header class="site-header" id="header">
   <div class="container header-inner">
     <a href="#inicio" class="brand">
-      <svg class="brand-mark" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-        <rect x="2" y="2" width="30" height="30" rx="6" stroke="currentColor" stroke-width="2"/>
-        <path d="M10 22V12L17 17L24 12V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <svg class="brand-mark" width="30" height="34" viewBox="0 0 64 72" aria-hidden="true"><use href="#logo-mark"></use></svg>
       <span class="brand-text">PROYECTAR<span class="brand-accent">INGENIERÍA</span></span>
     </a>
 
@@ -48,16 +55,16 @@
     <div class="hero-bg" aria-hidden="true"></div>
     <div class="container hero-inner">
       <p class="eyebrow reveal">Consultoría técnica en ingeniería</p>
-      <h1 class="reveal">De la idea al plano. <br>De la planta al proceso perfeccionado.</h1>
+      <svg class="hero-logo reveal" width="64" height="72" viewBox="0 0 64 72" aria-hidden="true"><use href="#logo-mark"></use></svg>
+      <h1 class="reveal">Proyectar<br>Ingeniería</h1>
+      <p class="hero-tagline reveal">— Consultora —</p>
       <p class="hero-lead reveal">
-        Somos una consultora técnica conformada por ingenieros especializados en
-        ingeniería de producto, gestión de la calidad y optimización de procesos
-        industriales. Entendemos en profundidad el proceso de cada cliente para
-        ofrecer soluciones técnicamente sólidas, viables y sostenibles en el tiempo.
+        Brindamos soluciones de ingeniería y gestión de la calidad para impulsar
+        el crecimiento de tu empresa con eficiencia, precisión y mejora continua.
       </p>
       <div class="hero-actions reveal">
-        <a href="#servicios" class="btn btn-primary">Ver servicios</a>
-        <a href="#contacto" class="btn btn-outline">Hablemos de tu proyecto</a>
+        <a href="#servicios" class="btn btn-primary">Nuestros servicios →</a>
+        <a href="#nosotros" class="btn btn-outline">Conocernos →</a>
       </div>
     </div>
   </section>
