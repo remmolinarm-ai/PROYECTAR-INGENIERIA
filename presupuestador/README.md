@@ -37,34 +37,89 @@ el navegador (Chrome/Edge en Android o compu) ofrece "Instalar app" /
 normal, con ícono propio, y sigue andando sin conexión a internet gracias
 al service worker que cachea la app.
 
-## Dónde se guardan los datos hoy
+## Dónde se guardan los datos
 
-Por ahora todo se guarda en `localStorage`, **en el dispositivo donde se
-usa** (no se sincroniza solo entre el celular y la compu todavía). Para
-pasar los datos de un dispositivo a otro mientras tanto: **Ajustes →
-Exportar copia** en uno, y **Ajustes → Importar copia** en el otro.
+La app ya está conectada al proyecto Firebase **carpinteria-metalica-c2c15**
+(`js/firebase-config.js`). Con eso:
 
-### Próximo paso: sincronización automática con Firebase
+- **Sin iniciar sesión**: todo se guarda solo en este dispositivo
+  (`localStorage`), igual que antes.
+- **Iniciando sesión con Google** (botón en **Ajustes → Sincronización
+  entre dispositivos**): los materiales, tipos de trabajo, presupuestos y
+  datos de la empresa se guardan en Firestore y se sincronizan solos con
+  cualquier otro dispositivo donde se inicie sesión con esa misma cuenta
+  de Google — sigue funcionando sin conexión (Firestore cachea localmente
+  y sube los cambios cuando vuelve el internet).
+- **La primera vez que se inicia sesión** en una cuenta que todavía no
+  tiene nada guardado en la nube, la app sube automáticamente lo que ya
+  hubiera cargado en ese dispositivo (no hace falta cargar todo de nuevo).
+  Un segundo dispositivo que inicie sesión después ya va a encontrar los
+  datos de la nube — si ese segundo dispositivo tenía datos propios
+  cargados de antes, conviene exportarlos primero (**Ajustes → Exportar
+  copia**) por si hace falta revisarlos o sumarlos a mano.
 
-Para que los datos se sincronicen solos entre el celular y la compu hace
-falta un proyecto de Firebase (Firestore), gratuito para este volumen de
-uso. Pasos para crear el proyecto (los hace quien tenga la cuenta de
-Google del taller):
+### Falta un paso en Firebase Console para que funcione: reglas de seguridad
 
-1. Entrar a https://console.firebase.google.com/ y crear un proyecto
-   nuevo (cualquier nombre, por ejemplo "presupuestador-herreria").
-2. Dentro del proyecto: **Compilación → Firestore Database → Crear base
-   de datos** (modo producción, ubicación más cercana, ej. `southamerica-east1`).
-3. **Configuración del proyecto (ícono de tuerca) → Configuración del
-   proyecto → pestaña "General"** → en "Tus apps" agregar una app **Web**
-   (ícono `</>`). Firebase muestra un bloque `firebaseConfig` con
-   `apiKey`, `authDomain`, `projectId`, etc. — son datos públicos de
-   configuración, no contraseñas.
-4. Pasar ese bloque para dejar la app conectada (reemplaza el
-   almacenamiento local por sincronización real entre dispositivos).
+Sin esto, Firestore rechaza todas las lecturas/escrituras (ya lo
+verificamos: por defecto deniega todo, lo cual está bien mientras no haya
+reglas). Para habilitar el acceso *solo al dueño de cada cuenta*:
 
-Hasta que esto esté conectado, la app funciona igual de bien para un solo
-dispositivo por vez, usando exportar/importar para pasar los datos.
+1. En Firebase Console → **Bases de datos y almacenamiento → Firestore
+   Database → pestaña "Reglas"**.
+2. Reemplazar el contenido por:
+
+   ```
+   rules_version = '2';
+   service cloud.firestore {
+     match /databases/{database}/documents {
+       match /users/{uid} {
+         allow read, write: if request.auth != null && request.auth.uid == uid;
+         match /{document=**} {
+           allow read, write: if request.auth != null && request.auth.uid == uid;
+         }
+       }
+     }
+   }
+   ```
+3. **Publicar**.
+
+   Esto permite que una persona autenticada lea y escriba únicamente
+   dentro de `users/{su-propio-uid}/...` — nadie puede ver ni tocar datos
+   de otra cuenta.
+
+### Dominios autorizados para el botón "Iniciar sesión con Google"
+
+Google exige que el dominio desde donde se abre la app esté en la lista
+blanca de Firebase Auth, si no el botón va a fallar con un error de
+"dominio no autorizado":
+
+1. Firebase Console → **Seguridad → Authentication → Settings →
+   Authorized domains**.
+2. Verificar que esté el dominio donde se publique el sitio (por ejemplo
+   `<usuario>.github.io` si se usa GitHub Pages, o el dominio propio si
+   hay uno). `localhost` ya viene habilitado por defecto para probar en
+   la compu.
+
+### Cómo verificar que quedó funcionando
+
+No fue posible probar el inicio de sesión real con Google ni la
+sincronización en vivo desde este entorno de desarrollo (no tiene salida
+a internet hacia los dominios de Google necesarios para eso). Una vez
+publicado el sitio con las reglas y el dominio autorizado, conviene
+comprobar:
+
+1. Abrir la app, ir a **Ajustes** y tocar **"Iniciar sesión con Google"**
+   → debería abrir la ventana de cuentas de Google y, al elegir una,
+   volver a la app mostrando el badge superior como **"☁️ Sincronizado"**
+   y en Ajustes "Conectado como [email]".
+2. Cargar un material de prueba, abrir la misma app en el otro
+   dispositivo, iniciar sesión con la misma cuenta, y confirmar que el
+   material aparece solo sin tener que cargarlo de nuevo.
+3. Si el botón de login falla con un error de dominio: revisar el paso
+   de "Dominios autorizados" de arriba.
+4. Si aparece "no se pudo guardar" al generar un presupuesto: revisar que
+   las reglas de seguridad se hayan publicado (paso anterior) y que haya
+   conexión a internet en ese momento.
 
 ## Estructura
 
@@ -76,15 +131,20 @@ presupuestador/
   css/app.css            Estilos (mobile-first, con layout de escritorio)
   icons/                 Íconos de la app
   js/
+    firebase-config.js    Config pública del proyecto Firebase (no son
+                          contraseñas)
+    firebase-sync.js      Login con Google + sincronización con Firestore
+                          (opcional: si no carga, la app sigue 100% local)
     util.js              Helpers compartidos (toast, formateo, descargas)
-    store.js             Capa de datos sobre localStorage (materiales,
-                          trabajos, presupuestos, empresa, backup)
+    store.js             Capa de datos (materiales, trabajos, presupuestos,
+                          empresa, backup) — local por defecto, reemplazada
+                          por Firestore cuando hay sesión iniciada
     pdf-lite.js           Generador de PDF genérico, sin dependencias
     budget-pdf.js         Arma el PDF de un presupuesto sobre pdf-lite.js
     materiales.js         Pantalla Lista de precios
     categorias.js         Pantalla Tipos de trabajo
     presupuestos.js        Pantallas Nuevo presupuesto + Historial
-    ajustes.js             Pantalla Ajustes (empresa + backup)
+    ajustes.js             Pantalla Ajustes (empresa + backup + login)
     asistente.js           Buscador de precios en lenguaje natural
     app.js                 Navegación entre pantallas e inicialización
 ```

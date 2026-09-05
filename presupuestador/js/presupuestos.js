@@ -146,27 +146,38 @@
 
       var totales = calcularTotales();
       var empresa = Store.empresa.get();
-      var presupuesto = {
-        numero: Store.empresa.tomarNumero(),
-        fecha: Store.nowISO(),
-        cliente: estado.cliente.trim(),
-        obra: estado.obra.trim(),
-        categoriaId: estado.categoriaId,
-        categoriaNombre: totales.categoria ? totales.categoria.nombre : '',
-        porcentaje: totales.porcentaje,
-        items: estado.items,
-        totalMateriales: totales.totalMateriales,
-        manoObra: totales.manoObra,
-        total: totales.total,
-        notas: estado.notas.trim(),
-        condiciones: empresa.condiciones
-      };
-      Store.presupuestos.save(presupuesto);
-      BudgetPDF.descargar(presupuesto, empresa);
-      Util.toast('Presupuesto N° ' + presupuesto.numero + ' guardado');
-      estado = estadoInicial();
-      renderNuevo();
-      if (global.VistaHistorial) global.VistaHistorial.renderLista();
+      var guardarBtn = document.getElementById('np-guardar');
+      guardarBtn.disabled = true;
+
+      // tomarNumero() es síncrono en modo local y una transacción (Promise)
+      // en modo Firestore; Promise.resolve cubre ambos casos por igual.
+      Promise.resolve(Store.empresa.tomarNumero()).then(function (numero) {
+        var presupuesto = {
+          numero: numero,
+          fecha: Store.nowISO(),
+          cliente: estado.cliente.trim(),
+          obra: estado.obra.trim(),
+          categoriaId: estado.categoriaId,
+          categoriaNombre: totales.categoria ? totales.categoria.nombre : '',
+          porcentaje: totales.porcentaje,
+          items: estado.items,
+          totalMateriales: totales.totalMateriales,
+          manoObra: totales.manoObra,
+          total: totales.total,
+          notas: estado.notas.trim(),
+          condiciones: empresa.condiciones
+        };
+        Store.presupuestos.save(presupuesto);
+        BudgetPDF.descargar(presupuesto, empresa);
+        Util.toast('Presupuesto N° ' + presupuesto.numero + ' guardado');
+        estado = estadoInicial();
+        renderNuevo();
+        if (global.VistaHistorial) global.VistaHistorial.renderLista();
+      }).catch(function (err) {
+        console.error(err);
+        Util.toast('No se pudo guardar el presupuesto, revisá la conexión');
+        guardarBtn.disabled = false;
+      });
     });
   }
 

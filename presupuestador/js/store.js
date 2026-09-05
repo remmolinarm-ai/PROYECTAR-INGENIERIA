@@ -118,24 +118,26 @@
     }
   };
 
+  // Usa siempre la colección ACTIVA (global.Store.xxx), no los closures locales
+  // de más arriba, para que el backup funcione igual en modo local o nube.
   var backup = {
     exportJSON: function () {
       return JSON.stringify({
         version: 1,
         exportado: nowISO(),
-        materiales: materiales.getAll(),
-        categorias: categorias.getAll(),
-        presupuestos: presupuestos.getAll(),
-        empresa: empresa.get()
+        materiales: global.Store.materiales.getAll(),
+        categorias: global.Store.categorias.getAll(),
+        presupuestos: global.Store.presupuestos.getAll(),
+        empresa: global.Store.empresa.get()
       }, null, 2);
     },
     importJSON: function (jsonString) {
       var data = JSON.parse(jsonString);
       if (!data || typeof data !== 'object') throw new Error('Archivo inválido');
-      if (Array.isArray(data.materiales)) materiales.replaceAll(data.materiales);
-      if (Array.isArray(data.categorias)) categorias.replaceAll(data.categorias);
-      if (Array.isArray(data.presupuestos)) presupuestos.replaceAll(data.presupuestos);
-      if (data.empresa) empresa.save(data.empresa);
+      if (Array.isArray(data.materiales)) global.Store.materiales.replaceAll(data.materiales);
+      if (Array.isArray(data.categorias)) global.Store.categorias.replaceAll(data.categorias);
+      if (Array.isArray(data.presupuestos)) global.Store.presupuestos.replaceAll(data.presupuestos);
+      if (data.empresa) global.Store.empresa.save(data.empresa);
     }
   };
 
@@ -147,6 +149,15 @@
     presupuestos: presupuestos,
     empresa: empresa,
     backup: backup,
-    ensureSeed: ensureSeed
+    ensureSeed: ensureSeed,
+    // API estable de eventos: no cambia aunque materiales/categorias/etc. se
+    // reemplacen por una implementación respaldada en Firestore al iniciar
+    // sesión (ver firebase-sync.js). Así las pantallas siempre se enteran de
+    // cambios, vengan de este dispositivo o de otro sincronizado.
+    subscribe: subscribe,
+    notify: emit,
+    // Implementación 100% local (localStorage), para volver a este modo al
+    // cerrar sesión y para la migración inicial de datos a la nube.
+    _local: { materiales: materiales, categorias: categorias, presupuestos: presupuestos, empresa: empresa }
   };
 })(window);

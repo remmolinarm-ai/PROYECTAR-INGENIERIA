@@ -1,6 +1,27 @@
 (function (global) {
   'use strict';
 
+  function renderSincronizacion() {
+    if (!global.FirebaseSync || !global.FirebaseSync.estaConfigurado()) {
+      return '<p style="font-size:0.82rem;color:var(--steel-500);">' +
+        'La sincronización con la nube todavía no está conectada en esta app.' +
+        '</p>';
+    }
+    var user = global.FirebaseSync.usuarioActual();
+    if (user) {
+      return '<p style="font-size:0.82rem;color:var(--steel-500);margin-bottom:12px;">' +
+          'Conectado como <strong>' + Util.escapeHtml(user.email || '') + '</strong>. ' +
+          'Los materiales, trabajos y presupuestos se sincronizan solos con cualquier otro dispositivo donde inicies sesión con esta misma cuenta.' +
+        '</p>' +
+        '<button class="btn btn-outline btn-block" id="aj-auth-btn" data-action="salir">Cerrar sesión</button>';
+    }
+    return '<p style="font-size:0.82rem;color:var(--steel-500);margin-bottom:12px;">' +
+        'Iniciá sesión con Google para que los datos se sincronicen solos entre el celular y la compu. ' +
+        'Hasta entonces, quedan solo en este dispositivo (podés usar Exportar/Importar copia para pasarlos manualmente).' +
+      '</p>' +
+      '<button class="btn btn-primary btn-block" id="aj-auth-btn" data-action="entrar">Iniciar sesión con Google</button>';
+  }
+
   function render() {
     var cont = document.getElementById('ajustes-container');
     var e = Store.empresa.get();
@@ -34,11 +55,8 @@
       '</div>' +
 
       '<div class="card">' +
-        '<h2 style="font-size:0.95rem;font-weight:700;margin-bottom:6px;">Sincronización</h2>' +
-        '<p style="font-size:0.82rem;color:var(--steel-500);">' +
-          'Por ahora los datos se guardan solo en este dispositivo (localStorage). ' +
-          'La sincronización automática entre celular y compu con Firebase se conecta en un próximo paso.' +
-        '</p>' +
+        '<h2 style="font-size:0.95rem;font-weight:700;margin-bottom:6px;">Sincronización entre dispositivos</h2>' +
+        renderSincronizacion() +
       '</div>';
 
     document.getElementById('aj-guardar').addEventListener('click', function () {
@@ -85,6 +103,14 @@
       };
       reader.readAsText(file);
     });
+
+    var authBtn = document.getElementById('aj-auth-btn');
+    if (authBtn) {
+      authBtn.addEventListener('click', function () {
+        if (authBtn.dataset.action === 'entrar') global.FirebaseSync.iniciarSesion();
+        else global.FirebaseSync.cerrarSesion();
+      });
+    }
   }
 
   global.VistaAjustes = { init: render };

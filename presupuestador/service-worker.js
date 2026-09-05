@@ -1,10 +1,11 @@
 /* Cache-first para poder abrir y usar la app sin conexión en el taller. */
-var CACHE_NAME = 'presupuestador-v1';
+var CACHE_NAME = 'presupuestador-v2';
 var APP_SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './css/app.css',
+  './js/firebase-config.js',
   './js/util.js',
   './js/store.js',
   './js/pdf-lite.js',
@@ -14,6 +15,7 @@ var APP_SHELL = [
   './js/presupuestos.js',
   './js/ajustes.js',
   './js/asistente.js',
+  './js/firebase-sync.js',
   './js/app.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
